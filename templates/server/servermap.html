@@ -1,0 +1,106 @@
+{% extends "master_templates/index_master.html" %}
+
+{% block css %}
+   <link href="/statics/servermap/css/servermap.css" rel="stylesheet">
+{% endblock %}
+
+{% block title %}
+<div style="text-align: center"><h2>亚太中心机房直播业务机柜图总览</h2></div>
+{% endblock %}
+
+
+{% block content %}
+
+      <!-- <script src='/statics/servermap/js/server_top.js' language='javascript'>
+        </script>
+       -->
+
+        {% for p in pailist %}
+        <div align=center>
+            第 {{ p }} 排
+        </div>
+        <table width='100%' border='0' cellpadding='1' cellspacing='3' bgcolor='#ffffff'
+        class='jjtable'>
+            <tr align='center' valign='top'>
+
+            {% for g in guilist %}
+                <td width='147' bgcolor='#eeeeee' background="/statics/servermap/images/serverico/jg.gif" style="background-size:cover" >
+                    <table width='99%' height='440' border='0' cellpadding='1' cellspacing='0'>
+                        <tr>
+                            <td height='30' align='center' valign='bottom' class='jgtable'>
+                                <font class=jgtitle>
+                                    {{ g }}
+                                </font>
+
+                        </tr>
+
+                        {% for h in hanlist %}
+                        <tr>
+                            <td height='30' align='center' valign='bottom' class='jgtable' id="{{ p }}-{{ g }}-{{ h }}">
+                                &nbsp
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </table>
+
+                </td>
+                <td width="2px"></td>
+            {% endfor %}
+            </tr>
+        </table>
+        <p>
+            &nbsp;
+        </p>
+    {% endfor %}
+<!--服务器操作开始-->
+
+    <!--服务器操作结束-->
+{% endblock %}
+{% block script %}
+    <script src="/statics/servermap/js/server_top.js" language="javascript"></script>
+    <script type="text/javascript">
+    function servermap(){
+        //data格式如下
+        var str = {{ data|safe }};
+        // 'encoder01':['172.16.110.1','CentOS','1-3-4','up'],
+        $.each(str,function(k,v){
+            var name = k;
+            var ip = v[0];
+            var weizhi = v[2];
+            var os = v[1];
+            var status = v[3];
+            if(status == 'up') {
+                $("#" + weizhi).append("<img src='/statics/servermap/images/serverico/1u_normal.gif' usemap='#planetmap"+weizhi+"'  style='vertical-align: bottom;' onmouseover=" + "displayDIV('sysinfo" + weizhi + "'); return false' onmouseout=" + "hiddenDIV('sysinfo" + weizhi + "'); return false' height='12' width='127'>"+"<map name='planetmap"+weizhi+"' id='planetmap'><area  coords='0,10,10' "+"onclick=" + "displayDIV('operate" + weizhi + "');"+" ></map>"+" <div id='sysinfo" + weizhi + "' style='border-style: outset; border-color: -moz-use-text-color; border-width: 1px 2px 2px 1px; background: rgb(255, 255, 255) none repeat scroll 0% 0%; display: none; position: absolute; width: 200px; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial; text-align: left;'><table cellpadding='3' cellspacing='1'><tbody><tr><td>主机名:" + k + "<br>IP:" + ip + "<br>操作系统:" + os + "<br>位置:" + weizhi + "<br>机型:1U<br>状态:"+status+"<br></td></tr></tbody></table></div>"+"<map name='planetmap"+weizhi+"' id='planetmap'><area  coords='0,10,10' "+"onclick=" + "displayDIV('sysinfo" + weizhi + "');"+" ></map>"+" <div id='operate" + weizhi + "' style='border-style: outset; border-color: -moz-use-text-color; border-width: 1px 2px 2px 1px; background: rgb(255, 255, 255) none repeat scroll 0% 0%; display: none; position: absolute; width: 200px; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial; text-align: left;'><table cellpadding='3' cellspacing='1'><tbody><tr><button style='left: 84%;'title = '关闭该窗口' onclick=" + "hiddenDIV('operate" + weizhi + "') class='glyphicon glyphicon-remove'></button></tr><tr><td>主机名:" + k + "<br>IP:" + ip + "<br>操作系统:" + os + "<br>状态:"+status+"<br>操作:<button title = '重启' onclick=reboot() class='glyphicon glyphicon-repeat'></button>            <button title = '关机'onclick=shutdown() class='glyphicon glyphicon-off'></button> "+"<br></td></tr></tbody></table></div>")
+            }
+            else{
+                   $("#" + weizhi).append("<img src='/statics/servermap/images/serverico/1u_down.gif' style='vertical-align: bottom;' onmouseover=" + "displayDIV('operate" + weizhi + "'); return false' onmouseout=" + "hiddenDIV('operate" + weizhi + "'); return false' height='12' width='127'><div id='operate" + weizhi + "' style='border-style: outset; border-color: -moz-use-text-color; border-width: 1px 2px 2px 1px; background: rgb(255, 255, 255) none repeat scroll 0% 0%; display: none; position: absolute; width: 200px; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial; text-align: left;'><table cellpadding='3' cellspacing='1'><tbody><tr><td>主机名:" + k + "<br>IP:" + ip + "<br>操作系统:" + os + "<br>位置:" + weizhi + "<br>机型:1U<br>状态:"+status+"<br></td></tr></tbody></table></div>")
+            }
+        })
+    }
+
+    window.onload = servermap;
+</script>
+    <script type="text/javascript">
+    function reboot(){
+        if (confirm('确认重启吗') == true){
+            alert('重启中...')
+        }
+        else{
+            alert('取消重启')
+        }
+    }
+    function shutdown(){
+        if (confirm('确认关机吗') == true){
+            alert('关机中...')
+
+        }
+        else{
+            alert('取消关机')
+        }
+
+    }
+    </script>
+
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "master_templates/index_master.html" %}
+
+
+
+{% block title %}
+ <div  style="margin-top: 20px;">
+<ul class="nav nav-tabs">
+  <li role="presentation" class="{%ifequal   ID '1' %} active {%endifequal%}"><a href="{% url 'getlivepics' 1 %}"> 直播服务器01</a></li>
+  <li role="presentation" class="{%ifequal  ID  '2' %} active {%endifequal%}"><a href="{% url 'getlivepics' 2 %}">直播服务器02</a></li>
+  <li role="presentation" class="{%ifequal  ID '3' %} active {%endifequal%}"><a href="{% url 'getlivepics' 3 %}">直播服务器03</a></li>
+</ul>
+    </div>
+{% endblock %}
+
+{% block content %}
+  <div class="row">
+  {% for key,value in allch.items  %}
+  <div class="col-xs-6 col-md-3" style="text-align: center">
+    {{ value.1 }}
+    <a href="{{ value.0 }}" target="_blank" class="thumbnail">
+      <img src="/statics/livepics/{{ key }}.jpg" alt="{{ key }}">
+    </a>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

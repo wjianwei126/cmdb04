@@ -1,0 +1,124 @@
+{% extends "master_templates/index_master.html" %}
+
+
+
+{% block title %}
+<div class="col-lg-12" style="text-align: center;margin-top: 10px;margin-bottom: 20px;">
+    <div class="btn-group">
+        <a class="btn btn-default {% ifequal  key 'all' %} active {%endifequal%}"
+        href={% url 'channeslencoder' 'all' %}>
+            <span class="glyphicon glyphicon-edit" >
+            </span>
+            所有频道
+
+        </a>
+        <a class="btn btn-default {% ifequal  key 'publish' %} active {%endifequal%}"
+        href={% url 'channeslencoder' 'publish' %}>
+            <span class="glyphicon glyphicon-list">
+            </span>
+            已发布频道
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block content %}
+<!--将列表内容居中显示开始-->
+    <style>
+th,td{
+    text-align: center;
+}
+    button.btn.btn-primary {
+  position: relative;
+  margin-left: 44%;
+}
+    </style>
+<!--将列表内容居中显示结束-->
+
+
+<div class="container-fluid" style="margin-top: 42px;">
+	<div class="row-fluid">
+		<div class="span12">
+               {%  ifequal superusercheck '0' %}
+                   <h2>普通账户无权访问此页</h2>
+                {% else %}
+                   {% if not contents%}
+                   <h2>未发现数据库中的用户名，请首先添加用户!!</h2>
+                    <a href="/sysadmin/useradd/" style="font-size: 20px"> 点此添加用户</a>
+                   {% else %}
+            {% ifequal resetresult 'resetsuccess'%}
+            <div class="alert alert-success">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            密码重置成功
+                </div>
+                {% endifequal %}
+            {% ifequal delresult 'delsuccess'%}
+            <div class="alert alert-success">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            用户删除成功
+            </div>
+            {% endifequal %}
+            {% ifequal resetresult 'iderror'%}
+            <div class="alert alert-error">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            没有此ID
+            </div>
+            {% endifequal %}
+    </div>
+                           <div class="btn-toolbar">
+
+                    <div class="btn-toolbar list-toolbar">
+                    <table class="table table-hover table-striped  table-bordered table-condensed" >
+				<thead>
+					<tr>
+						<th>
+							频道名称
+						</th>
+						<th>
+							编码器地址
+						</th>
+                        <th>
+                            清晰度
+
+                        </th>
+                        <th>
+                            查看
+                        </th>
+					</tr>
+				</thead>
+				<tbody>
+                 {% for line in contents %}
+                <!--<tr onmouseover="this.style.backgroundColor='#EEEEEE';" onmouseout="this.style.backgroundColor='#FFFFFF';">-->
+                <tr onmouseover="this.style.backgroundColor='#EEEEEE';" onmouseout="this.style.backgroundColor='';">
+                    <td >{{ line.0  }}</td>
+                     <!--truncatewords:总共显示多少条记录,多的记录会以...显示-->
+
+                    <td > {{ line.1|truncatewords:1 }}
+                    </td>
+                     {% ifequal line.1|slice:"-4:-1" '800' %}
+                      <td><span class="label label-primary">标清</span></td>
+                        {% endifequal %}
+                      {% ifequal line.1|slice:"-4:-1" '200' %}
+                     <td><span class="label label-success">高清</span></td>
+                     {% endifequal %}
+                     {% ifequal line.1|slice:"-4:-1" '500' %}
+                      <td><span class="label label-info">普清</span></td>
+                     {% endifequal %}
+                     <td><a href="{{ line.1 | slice:"20" }}" target="_blank">查看</a>
+
+                     </td>
+                {% endfor %}
+                   {% endif %}
+                {% endifequal %}
+				</tbody>
+
+			</table>
+                <button class="btn btn-primary" type="button">
+         总共 <span class="badge">{{ counts }}</span> 条记录
+        </button>
+</div>
+<!---修改密码--->
+            <!---修改密码结束--->
+
+{% endblock %}

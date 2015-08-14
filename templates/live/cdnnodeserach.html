@@ -1,0 +1,103 @@
+{% extends "master_templates/index_master.html" %}
+
+
+
+{% block title %}
+    <div class="col-lg-12" style="text-align: center;margin-top: 10px;margin-bottom: 20px;">
+<div class="btn-group">
+    {% url "addcdnnode" as addcdnnode %}
+    <a class="btn btn-default {%if request.path = addcdnnode%} active {%endif%}"
+    href={{ addcdnnode }}>
+        <span class="glyphicon glyphicon-edit">
+        </span>
+        添加CDN节点IP
+    </a>
+    {% url "cdnnodelist" as cdnnodelist %}
+
+    <a class="btn btn-default {%if request.path = cdnnodelist%} active {%endif%}"
+    href={{ cdnnodelist }}>
+        <span class="glyphicon glyphicon-list">
+
+        </span>
+        CDN节点列表
+    </a>
+{% url "ytcentercdn" as ytcentercdn %}
+    <a class="btn btn-default {%if request.path = ytcentercdn%} active {%endif%}"
+    href={{ ytcentercdn }}>
+        <span class="glyphicon glyphicon-list">
+
+        </span>
+        亚太中心--全国分发图
+    </a>
+</div>
+    </div>
+        <div class="input-group custom-search-form"  style="margin-left: 77%;  margin-bottom: 9px;">
+          <form role="form" action="{% url 'cdnnodelist' %}" method="post" >
+                                <input type="text" class="form-control" placeholder="搜索" name="searchform">
+                                <span class="input-group-btn" style="margin-left: 196px;  position: absolute;">
+                                <button class="btn btn-default" type="submit">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+              </form>
+                            </div>
+{% endblock %}
+
+
+{% block content %}
+    <style>
+th,td{
+    text-align: center;
+}
+    </style>
+   {% ifequal issearch 'true' %}
+    搜索 {{ searchstr }} 结果:
+    {% endifequal %}
+                  <div class="btn-toolbar">
+
+                    <div class="btn-toolbar list-toolbar">
+                    <table class="table table-hover table-striped  table-bordered table-condensed" >
+				<thead>
+					<tr>
+						<th>
+							编号
+						</th>
+						<th>
+							CDN厂家
+						</th>
+                        <th>
+                            IP
+                        </th>
+						<th>
+							归属地
+						</th>
+                        <th>
+							ISP
+						</th>
+                        <th>
+                            操作
+                        </th>
+					</tr>
+				</thead>
+				<tbody>
+				{% for line in contents %}
+                <!--<tr onmouseover="this.style.backgroundColor='#EEEEEE';" onmouseout="this.style.backgroundColor='#FFFFFF';">-->
+                <tr onmouseover="this.style.backgroundColor='#EEEEEE';" onmouseout="this.style.backgroundColor='';">
+                    <td >{{ line.id}}</td>
+                    <td>{{ line.company}}</td>
+                   <td>{{ line.ip }}</td>
+                    <td>{{ line.position}}</td>
+                    <td>{{ line.isp}}</td>
+                    <td>
+                    <a href="{% url 'delcdnnode' line.id %}" role="button"  data-toggle="tooltip" data-placement="right" title="删除操作，谨慎操作！" onclick="return confirm('确认删除？')" class="btn btn-danger btn-xs" >删除</a>
+                    </td>
+                </tr>
+                {% endfor %}
+				</tbody>
+			</table>
+                <button class="btn btn-primary" type="button">
+         总共 <span class="badge">{{ counts }}</span> 条记录
+          </button>
+           </div>
+		  </div>
+{% endblock %}

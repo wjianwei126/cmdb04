@@ -1,0 +1,28 @@
+{% extends "master_templates/index_master.html" %}
+
+
+
+{% block title %}
+<div class="col-lg-12" style="text-align: center;margin-top: 10px;margin-bottom: 20px;">
+时间选择器测试
+</div>
+{% endblock %}
+
+
+{% block content %}
+
+    <link href="/statics/jquery.calendar-1.4.1/css/jquery.cxcalendar.css" rel="stylesheet">
+    <input id="element_id"  type="text" readonly>
+    <script src="/statics/jquery.calendar-1.4.1/js/jquery-1.11.3.min.js" type=text/javascript></script>
+    <script src="/statics/jquery.calendar-1.4.1/js/jquery.cxcalendar.js" type=text/javascript></script>
+    <script src="/statics/jquery.calendar-1.4.1/js/jquery.cxcalendar.languages.js" type=text/javascript></script>
+
+ <script>
+    $.cxCalendar.defaults.startDate = 1980;
+$.cxCalendar.defaults.language = {
+  monthList: ['一月', '二月', '二月', '二月', '二月', '二月', '二月', '二月', '二月', '二月', '二月', '二月'],
+  weekList: ['日', '一', '二', '三', '四', '五', '六']
+};
+   $('#element_id').cxCalendar();
+ </script>
+{% endblock %}

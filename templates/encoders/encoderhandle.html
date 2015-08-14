@@ -1,0 +1,158 @@
+{% extends "master_templates/index_master.html" %}
+
+
+
+{% block title %}
+<div class="col-lg-12" style="text-align: center;margin-top: 10px;margin-bottom: 20px;">
+    <div class="btn-group" >
+        <a class="btn btn-default {% ifequal  key 'all' %} active {%endifequal%}" title="查看所有频道所占编码器通道"
+        href={% url 'encoderstatus' 'all' %}>
+            <span class="glyphicon glyphicon-edit" >
+            </span>
+            所有频道占用
+        </a>
+        <a class="btn btn-default {% ifequal  key 'publish' %} active {%endifequal%}" title="仅查看发布频道所占编码器通道"
+        href={% url 'encoderstatus' 'publish' %}>
+            <span class="glyphicon glyphicon-list" >
+            </span>
+            已发布频道占用
+        </a>
+                <a class="btn btn-default {% ifequal  key 'handle' %} active {%endifequal%}" title="仅查看发布频道所占编码器通道"
+        href={% url 'encoderhandle'  %}>
+            <span class="glyphicon glyphicon-cog" >
+            </span>
+            编码器操作
+        </a>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block content %}
+<!--将列表内容居中显示开始-->
+    <style>
+th,td{
+    text-align: center;
+}
+    button.btn.btn-primary {
+  position: relative;
+  margin-left: 44%;
+}
+    </style>
+<!--将列表内容居中显示结束-->
+
+<div id='beijing' class="modal-backdrop fade in"  hidden style=" height: 1500px;z-index: 100000;text-align: center"><img style="margin-top: 27%" src="/statics/loading.gif"></div>
+<div class="container-fluid">
+	<div class="row-fluid">
+           <div class="btn-toolbar">
+
+           <div class="btn-toolbar list-toolbar">
+                    <table class="table table-hover table-striped  table-bordered table-condensed" >
+				<thead>
+					<tr>
+						<th>
+							编码器名称
+						</th>
+						<th>
+							通道使用状态
+						</th>
+                        <th>
+							操作
+						</th>
+                        
+				</thead>
+				<tbody>
+				{% for line in contents.items %}
+                <!--<tr onmouseover="this.style.backgroundColor='#EEEEEE';" onmouseout="this.style.backgroundColor='#FFFFFF';">-->
+                <tr onmouseover="this.style.backgroundColor='#EEEEEE';" onmouseout="this.style.backgroundColor='';">
+                    <td ><a href="http://{{ line.1.1 }}" target="_blank">{{ line.1.0 }}</a></td>
+                    <td data-uid="encoder{{ line.0}}">
+                        {% for i in defaultstatus %}
+                            <span class='label label-default' id=span{{ i }}>{{ i }}</span>
+                            {% endfor %}
+                    </td>
+                <td>
+                    <select id="selecthandle{{ line.0 }}">
+                            <option value='1'>重启</option>
+                            <option value='2'>关闭</option>
+                    </select>
+                    <select id="selecten{{ line.0 }}">{% for i in defaultstatus %}
+                            <option id='option{{ i }}' value='{{ i }}'>通道{{ i }}</option>
+                            {% endfor %}
+                    </select>
+
+                    <button class="btn btn-default btn-sm" type="button" onclick="EncoderHandle({{ line.0 }})"> 提交 </button>
+                </td>
+
+                </tr>
+                {% endfor %}
+				</tbody>
+
+			</table>
+</div>
+</div>
+</div>
+</div>
+{% endblock %}
+{% block script %}
+    <script type="text/javascript">
+    function encoderstatus(){
+        //data格式如下
+        //{'encoder01': ['1', '2', '3', '4'], 'encoder26': ['1', '2', '3', '4', '7', '8'], 'encoder03': ['1', '2', '3', '4'], 'encoder02': ['1', '2', '3', '4'], 'encoder05': ['2', '3', '4'], 'encoder04': ['1', '2', '3', '4'], 'encoder21': ['1'], 'encoder06': ['1', '2', '3', '4'], 'encoder09': ['1', '2', '3', '4'], 'encoder08': ['1', '2', '3', '4'], 'encoder25': ['1', '2', '3', '4'], 'encoder28': ['8'], 'encoder24': ['1', '2', '3', '4'], 'encoder23': ['1', '2', '3'], 'encoder22': ['1', '2'], 'encoder20': ['1', '2'], 'encoder27': ['1', '8'], 'encoder12': ['1', '2', '3', '4'], 'encoder13': ['1', '2', '3', '4'], 'encoder10': ['1', '2', '3'], 'encoder11': ['1', '2', '3', '4'], 'encoder17': ['1', '2', '3', '4'], 'encoder14': ['2', '3', '4'], 'encoder15': ['1', '2', '3', '4'], 'encoder18': ['1', '2', '3'], 'encoder19': ['1', '2', '3']};
+        var str = {{ data|safe }};
+        var testlist = [1,2,3,4,5,6,7,8];
+        $.each(str,function(k,v){
+             $("td[data-uid=" + k + "]").html('');
+            $.each(testlist,function(i){
+               if(v.indexOf(testlist[i].toString()) != -1 ) {
+               $("td[data-uid=" + k + "]").append("<span class='label label-success'"+"id=span"+testlist[i]+">" +testlist[i]+ "</span>"+' ')
+               }
+              else{
+                 $("td[data-uid=" + k + "]").append("<span class='label label-default'"+"id=span"+testlist[i]+">" +testlist[i]+ "</span>"+' ')
+               }
+            });
+
+        });
+        for(m=1;m<=25;m++){
+            for(n=5;n<=8;n++){
+            $("td[data-uid=" + "encoder"+ m + "]").find("span[id='"+"span"+n+"']").remove();
+            $("select[id=" + "selecten"+ m + "]").find("option[id='"+"option"+n+"']").remove()
+            }
+        }
+    }
+
+    window.onload = encoderstatus;
+</script>
+    <script type="text/javascript">
+        function syncrequest(url,data,type,func){
+          $.ajax({
+              url:url,
+              data:data,
+              type:type,
+              success:func
+          })
+        }
+        function EncoderHandle(num){
+            //hnum 关闭或者重启
+            //tnum 通道number
+            var tnum = $('#selecten'+num).val();
+            var hnum = $('#selecthandle'+num).val();
+        	syncrequest("{% url 'encoderhandleajax' %}",{'tnum':tnum,'hnum':hnum,'num':num},'POST',makesure);
+            if (hnum == '1'){
+              var hnum = '重启'
+            }
+            else{
+              var hnum = '关闭'
+            }
+            $('#beijing').show()
+
+        }
+       function makesure(result){
+           var status_code = result['content']['status_code']
+           if (status_code == '200'){
+               alert('操作完成!!!!');
+               $('#beijing').hide()
+           }
+        }
+  </script>
+{% endblock %}

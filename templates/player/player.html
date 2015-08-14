@@ -1,0 +1,29 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+<script type="text/javascript" src="/statics/player/swfobject.js"></script>
+<script type="text/javascript" src="/statics/player/tvieplayer.js"></script>
+<script type="text/javascript">
+    function preview(id){
+        var my_element = $("#TViePlayer" );
+        if( my_element.length > 0 ){
+           my_element.html('')
+        }
+        var id = id;
+        var width = 723/*video*/+20/*margin*/;
+       var height = 400/*video*/+75/*component*/;
+var resourceRoot = '/statics/player/';
+var player = new TViePlayer("player", resourceRoot+"CBNVodSkin.swf", width, height);
+var stream = $("td[data-uid=" + id + "]").text();
+player.setHttpProgressiveMode(stream);
+player.videoScaleMode = "original";
+player.run();
+    }
+</script>
+ <div class="tab-content" id="player"></div>
+</body>
+</html>

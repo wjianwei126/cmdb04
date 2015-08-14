@@ -1,0 +1,49 @@
+{% extends "master_templates/index_master.html" %}
+
+
+
+{% block title %}
+<div class="col-lg-12" style="text-align: center;margin-top: 10px;margin-bottom: 20px;">
+    <div class="btn-group">
+        <a class="btn btn-default active" href={% url 'addencoderstatus' %}>
+            <span class="glyphicon glyphicon-edit">
+            </span>
+            新建编码器
+        </a>
+        <a class="btn btn-default" href= {% url 'getencoderstatus' %} >
+            <span class="glyphicon glyphicon-list">
+            </span>
+            通道状态
+        </a>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block content %}
+<style>
+.dialog ul li {
+  list-style-type: none;
+  float: left;
+  margin-left: 10px;
+
+}
+</style>
+<div class="dialog">
+           <form id='form' method='post' action='{% url 'addencoderstatus' %}'>
+                {% csrf_token %}
+                <div class="panel-body" style="margin-left: 34.333333%; width: 33.33333333%;" id="form-group">
+                     {% csrf_token %}
+                    {{form.as_p}}
+                </div>
+                <input type="submit" class="btn btn-primary pull-right"  style="margin-right: 33.666667%; width:  29.333333%; margin-top: 20px;
+" value="添加">
+                <h3 style="position: relative;top:-73px;left: 574px">{{ addResult }}</h3>
+                <div class="clearfix"></div>
+            </form>
+        </div>
+
+
+
+{% endblock %}

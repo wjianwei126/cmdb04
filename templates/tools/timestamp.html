@@ -1,0 +1,77 @@
+{% extends "master_templates/index_master.html" %}
+
+
+
+{% block title %}
+    <div class="col-lg-12" style="text-align: center;margin-top: 10px;margin-bottom: 20px;">
+<div class="btn-group">
+    {% url "ippostion" as ippostion %}
+    <a class="btn btn-default {%if request.path = ippostion%} active {%endif%}"
+    href={{ ippostion }}>
+        <span class="glyphicon glyphicon-edit">
+        </span>
+        查询IP归属地
+    </a>
+    {% url "timestamp" as timestamp %}
+    <a class="btn btn-default {%if request.path = cdnnodelist%} active {%endif%}"
+    href={{ timestamp }}>
+        <span class="glyphicon glyphicon-list">
+        </span>
+        时间戳转换
+    </a>
+
+</div>
+    </div>
+{% endblock %}
+
+
+{% block content %}
+    <style>
+th,td{
+    text-align: center;
+}
+li{
+    list-style-type: none;
+}
+
+div.panel-body li li{
+	list-style-type: none;
+    margin-top: 65px;
+    margin-left: 2%;
+    position: absolute;
+}
+div.panel-body li label{
+    top: 33px;
+    position: relative;
+    left: -76px;
+    font-size: 15px;
+}
+
+div.form-group ul.errorlist li {
+	color: red;
+	position: relative;
+	top: 62px;
+	left: 368px;
+}
+
+
+    </style>
+<div class="input-group" style="text-align: center;margin-left: 42%;">
+      <input class="form-control" style="border-radius: 6px;" id="times" name="ip" placeholder="请输入要转换的时间戳" maxlength="10" type="text">
+     <button type="submit" class="btn btn-primary" style="  margin-top: 11px;"  onclick="timestampzhuanhuan()">转换</button>
+    </div>
+    <div id="result" style="  margin-left: 42%">
+    <input class="form-control" style="font-weight: bold;color: #22ac38;border-radius: 6px;width: 250px;margin-top: 10px;" maxlength="10" readonly id="disresult" placeholder="转换结果"  type="text">
+    </div>
+    <script type="text/javascript">
+    function timestampzhuanhuan(){
+       var times =  $("#times").val();
+        var unixTimestamp = new Date(times * 1000);
+        commonTime = unixTimestamp.toLocaleString();
+        $("#disresult").val(commonTime)
+
+        }
+
+
+    </script>
+{% endblock %}

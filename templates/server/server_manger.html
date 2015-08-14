@@ -1,0 +1,190 @@
+{% extends "master_templates/index_master.html" %}
+
+
+
+{% block title %}
+    <div class="col-lg-12" style="text-align: center;margin-top: 10px;margin-bottom: 20px;">
+<div class="btn-group">
+    {% url "adduserurl" as theadduserurl %}
+    <a class="btn btn-default {%if request.path = theadduserurl%} active {%endif%}"
+    href={{ theadduserurl }}>
+        <span class="glyphicon glyphicon-edit">
+        </span>
+        新建用户
+    </a>
+    {% url "listuserurl" as thelistuserurl %}
+    <a class="btn btn-default {%if request.path = thelistuserurl%} active {%endif%}"
+    href={{ thelistuserurl }}>
+        <span class="glyphicon glyphicon-list">
+        </span>
+        用户列表
+    </a>
+</div>
+    </div>
+{% endblock %}
+
+
+{% block content %}
+<!--将列表内容居中显示开始-->
+    <style>
+th,td{
+    text-align: center;
+}
+    button.btn.btn-primary {
+  position: relative;
+  margin-left: 44%;
+}
+    </style>
+<!--将列表内容居中显示结束-->
+
+
+<div class="container-fluid">
+	<div class="row-fluid">
+		<div class="span12">
+               {%  ifequal superusercheck '0' %}
+                   <h2>普通账户无权访问此页</h2>
+                {% else %}
+                   {% if not contents%}
+                   <h2>未发现数据库中的用户名，请首先添加用户!!</h2>
+                    <a href="/sysadmin/useradd/" style="font-size: 20px"> 点此添加用户</a>
+                   {% else %}
+            {% ifequal resetresult 'resetsuccess'%}
+            <div class="alert alert-success">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            密码重置成功
+                </div>
+                {% endifequal %}
+            {% ifequal delresult 'delsuccess'%}
+            <div class="alert alert-success">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            用户删除成功
+            </div>
+            {% endifequal %}
+            {% ifequal resetresult 'iderror'%}
+            <div class="alert alert-error">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            没有此ID
+            </div>
+            {% endifequal %}
+    </div>
+                           <div class="btn-toolbar">
+
+                    <div class="btn-toolbar list-toolbar">
+                    <table class="table table-hover table-striped  table-bordered table-condensed" >
+				<thead>
+					<tr>
+						<th>
+							编号
+						</th>
+						<th>
+							用户名
+						</th>
+                        <th>
+                            性别
+                        </th>
+						<th>
+							是否为管理员
+						</th>
+                        <th>
+							邮件
+						</th>
+                        <th>
+                            上次登陆时间
+                        </th>
+                        <th>
+                            启用
+                        </th>
+                        <th>
+                            操作
+                        </th>
+					</tr>
+				</thead>
+				<tbody>
+                       {% load pagination_tags %}
+                {% autopaginate contents 10 %}
+				{% for line in contents %}
+                <!--<tr onmouseover="this.style.backgroundColor='#EEEEEE';" onmouseout="this.style.backgroundColor='#FFFFFF';">-->
+                <tr onmouseover="this.style.backgroundColor='#EEEEEE';" onmouseout="this.style.backgroundColor='';">
+                    <td >{{ line.id}}</td>
+                    <td>{{ line.username}}</td>
+                   <td>{{ line.sex }}</td>
+                    <td >
+                     {% if line.is_superuser %}
+                            <span class="label label-success">是</span>
+                        {% else %}
+                            <span class="label label-default">否</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ line.email}}</td>
+                    <td>{{ line.last_login}}</td>
+                    <td>
+                        {% ifequal line.is_active True %}
+                            <a class="label label-success">启用</a>
+                        {% else %}
+                            <span class="label label-default">禁用</span>
+                        {% endifequal %}
+                    </td>
+                    <td>
+                        <a href="{% url 'updateuserinfo' line.id %}" data-toggle="tooltip" data-placement="right" title="编辑用户信息"  class="btn btn-primary btn-xs">编辑</a>
+                        <a href="{% url 'resetpwd' line.id %}" data-toggle="tooltip" data-placement="right" title="可将用户密码重置为:123456"  onclick="return confirm('确认重置密码吗？')" class="btn btn-info btn-xs">重置</a>
+                    {% ifnotequal  line.id 1  %}
+                    <a href="/user/deluser/{{ line.id }}" role="button"  data-toggle="tooltip" data-placement="right" title="删除用户，谨慎操作！" onclick="return confirm('确认删除？')" class="btn btn-danger btn-xs" >删除</a>
+                    {% endifnotequal  %}
+                    </td>
+                </tr>
+                {% endfor %}
+                   {% endif %}
+                {% endifequal %}
+				</tbody>
+
+			</table>
+                <button class="btn btn-primary" type="button">
+         总共 <span class="badge">{{ usercounts }}</span> 条记录
+        </button>
+<!-- 添加层开始 -->
+<div id='wpq-modal' class='wpq-modal hide'>
+	<div class='cancle' onclick='CancleShade();'>x</div>
+	<div class='title'>添加用户</div>
+	<form id='form' class='form' method='post' action='/admin/adduser/'>
+		{% csrf_token %}
+		<div>
+            {{model.as_ul}}
+		</div>
+		<div class='bottom'>
+			<input type='submit' value='确定'/>
+			<input type='button' value='关闭' onclick='CancleShade();'/>
+		</div>
+	</form>
+</div>
+<!-- 添加层结束 -->
+
+<!-- 删除层开始 -->
+<div id='wpq-modal-del' class='wpq-modal hide'>
+	<div class='cancle' onclick='CancleShade();'>x</div>
+	<div class='title'>提示</div>
+	<form id='form1' class='form' method='post' action='/admin/deluser/'>
+		{% csrf_token %}
+		<div>
+			<input  type='hidden' id='delnid' name='delnid' />
+			真的不要我了吗？
+		</div>
+		<div class='bottom'>
+			<input type='submit' value='确定'/>
+			<input type='button' value='关闭' onclick='CancleShade();'/>
+		</div>
+	</form>
+</div>
+<!-- 删除层结束 -->
+
+<!-- 遮罩层开始 -->
+<div id='shade' class='shade hide'></div>
+<!-- 遮罩层结束 -->
+
+        </div>
+		</div>
+	</div>
+{% paginate %}
+</div>
+
+
+{% endblock %}

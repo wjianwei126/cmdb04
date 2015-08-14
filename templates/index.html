@@ -1,0 +1,22 @@
+{% extends "master_templates/index_master.html" %}
+
+ {% block user %}
+     {{ loginuser }}
+
+ {% endblock %}
+
+
+{% block title %}
+     <h1 class="page-title">首页</h1>
+            <ul class="breadcrumb">
+            <li><a href="/sysadmin/index/">系统管理</a> </li>
+            <li class="active">首页</li>
+        </ul>
+
+{% endblock %}
+
+
+{% block content %}
+    亚太业务信息管理系统
+
+{% endblock %}

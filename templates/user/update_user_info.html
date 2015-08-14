@@ -1,0 +1,109 @@
+{% extends "master_templates/index_master.html" %}
+
+ {% block user %}
+     {{ loginuser }}
+
+ {% endblock %}
+
+
+{% block title %}
+    <div class="col-lg-12" style="text-align: center;margin-top: 10px;margin-bottom: 20px;">
+<div class="btn-group">
+    {% url "adduserurl" as theadduserurl %}
+    <a class="btn btn-default {%if request.path = theadduserurl%} active {%endif%}"
+    href={{ theadduserurl }}>
+        <span class="glyphicon glyphicon-edit">
+        </span>
+        新建用户
+    </a>
+    {% url "listuserurl" as thelistuserurl %}
+    <a class="btn btn-default {%if request.path = thelistuserurl%} active {%endif%}"
+    href={{ thelistuserurl }}>
+        <span class="glyphicon glyphicon-list">
+        </span>
+        用户列表
+    </a>
+</div>
+    </div>
+{% endblock %}
+
+
+{% block content %}
+<style>
+li{
+    list-style-type: none;
+}
+
+div.panel-body li li{
+	list-style-type: none;
+    margin-top: 65px;
+    margin-left: 4%;
+    position: absolute;
+}
+div.panel-body li label{
+    top: 33px;
+    position: relative;
+    left: -76px;
+    font-size: 15px;
+}
+
+div.form-group ul.errorlist li {
+	color: red;
+	position: relative;
+	top: 62px;
+	left: 368px;
+}
+
+input {
+	display: block;
+	width: 100%;
+	height: 34px;
+	padding: 6px 12px;
+	font-size: 14px;
+	line-height: 1.42857143;
+	color: #555;
+	background-color: #fff;
+	background-image: none;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+	box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+	-webkit-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+	transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+}
+    </style>
+    {% ifequal adduserresult 'addsuccess'%}
+            <div class="alert alert-success">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            用户添加成功
+                </div>
+                {% endifequal %}
+            {% ifequal adduserresult 'addexits'%}
+            <div class="alert alert-danger alert-dismissible" style="margin-top: 54px;width: 590px; margin-left: 31%;" role="alert">
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <strong>Warning!</strong> 用户已存在，请重新选择用户名。
+            </div>
+                {% endifequal %}
+        <div class="dialog">
+           <form id='form' method='post' action='{% url 'updateuserinfo' ID %}'>
+                {% csrf_token %}
+                <div class="panel-body" style="margin-left: 34.333333%; width: 33.33333333%;" id="form-group">
+                     {% csrf_token %}
+                    {{form.as_ul}}
+                </div>
+                <!--<input type="submit" class="btn btn-primary pull-right"    style="margin-right: 33.666667%; width:  29.333333%; margin-top: 20px;
+" value="确认更新">-->
+               <input type="submit" class="btn btn-primary pull-right"  onclick="return confirm('确认提交新的用户信息吗？')"  style="margin-right: 33.666667%; width:  29.333333%; margin-top: 20px;
+" value="确认更新">
+                <h3 style="position: relative;top:-73px;left: 574px">{{ addResult }}</h3>
+                <div class="clearfix"></div>
+            </form>
+        </div>
+
+<script type="text/javascript">
+   window.onload = function(){
+       var input_username = document.getElementById('id_username');
+       input_username.readOnly = "readonly";
+   }
+</script>
+{% endblock %}

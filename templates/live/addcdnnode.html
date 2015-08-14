@@ -1,0 +1,93 @@
+{% extends "master_templates/index_master.html" %}
+
+
+
+{% block title %}
+    <div class="col-lg-12" style="text-align: center;margin-top: 10px;margin-bottom: 20px;">
+<div class="btn-group">
+    {% url "addcdnnode" as addcdnnode %}
+    <a class="btn btn-default {%if request.path = addcdnnode%} active {%endif%}"
+    href={{ addcdnnode }}>
+        <span class="glyphicon glyphicon-edit">
+        </span>
+        添加CDN节点IP
+    </a>
+    {% url "cdnnodelist" as cdnnodelist %}
+    <a class="btn btn-default {%if request.path = cdnnodelist%} active {%endif%}"
+    href={{ cdnnodelist }}>
+        <span class="glyphicon glyphicon-list">
+        </span>
+        CDN节点列表
+    </a>
+{% url "ytcentercdn" as ytcentercdn %}
+    <a class="btn btn-default {%if request.path = ytcentercdn%} active {%endif%}"
+    href={{ ytcentercdn }}>
+        <span class="glyphicon glyphicon-list">
+
+        </span>
+        亚太中心--全国分发图
+    </a>
+</div>
+    </div>
+{% endblock %}
+
+
+{% block content %}
+    <style>
+li{
+    list-style-type: none;
+}
+
+div.panel-body li li{
+	list-style-type: none;
+    margin-top: 65px;
+    margin-left: 2%;
+    position: absolute;
+}
+div.panel-body li label{
+    top: 33px;
+    position: relative;
+    left: -76px;
+    font-size: 15px;
+}
+
+div.form-group ul.errorlist li {
+	color: red;
+	position: relative;
+	top: 62px;
+	left: 368px;
+}
+
+input {
+	display: block;
+	width: 100%;
+	height: 34px;
+	padding: 6px 12px;
+	font-size: 14px;
+	line-height: 1.42857143;
+	color: #555;
+	background-color: #fff;
+	background-image: none;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+	box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+	-webkit-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+	transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+}
+    </style>
+ <div class="dialog">
+           <form id='form' method='post' action='{% url 'addcdnnode' %}'>
+                {% csrf_token %}
+                <div class="panel-body" style="margin-left: 34.333333%; width: 33.33333333%;" id="form-group">
+                     {% csrf_token %}
+                    {{model.as_ul}}
+                </div>
+                <input type="submit" class="btn btn-primary pull-right"  style="margin-right: 33.666667%; width:  29.333333%; margin-top: 20px;
+" value="添加">
+                <h3 style="position: relative;top:-73px;left: 574px">{{ addResult }}</h3>
+                <div class="clearfix"></div>
+            </form>
+        </div>
+
+{% endblock %}

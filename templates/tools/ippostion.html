@@ -1,0 +1,153 @@
+{% extends "master_templates/index_master.html" %}
+
+
+
+{% block title %}
+    <div class="col-lg-12" style="text-align: center;margin-top: 10px;margin-bottom: 20px;">
+<div class="btn-group">
+    {% url "ippostion" as ippostion %}
+    <a class="btn btn-default {%if request.path = ippostion%} active {%endif%}"
+    href={{ ippostion }}>
+        <span class="glyphicon glyphicon-edit">
+        </span>
+        查询IP归属地
+    </a>
+    {% url "timestamp" as timestamp %}
+    <a class="btn btn-default {%if request.path = cdnnodelist%} active {%endif%}"
+    href={{ timestamp }}>
+        <span class="glyphicon glyphicon-list">
+        </span>
+        时间戳转换
+    </a>
+
+</div>
+    </div>
+{% endblock %}
+
+
+{% block content %}
+    <style>
+th,td{
+    text-align: center;
+}
+li{
+    list-style-type: none;
+}
+
+
+
+
+    </style>
+    <div class="input-group" style="text-align: center;margin-left: 42%;">
+      <input class="form-control" style="border-radius: 6px;" id="id_ip" name="ip" placeholder="请输入要查询的IP地址" type="text">
+     <button type="submit" class="btn btn-primary" style="  margin-top: 11px;" onclick="GetIPostion()">查询</button>
+    </div>
+
+       <div class="btn-toolbar list-toolbar" style="  margin-top: 11px;" >
+                    <table class="table table-hover table-striped  table-bordered table-condensed"  >
+				<thead >
+					<tr >
+						<th >
+							IP
+						</th>
+						<th>
+							国家
+						</th>
+                        <th>
+                            省份
+                        </th>
+                        <th>
+                            城市
+                        </th>
+                        <th>
+                            运营商
+                        </th>
+					</tr>
+				</thead>
+				<tbody>
+                <tr>
+                <td id="ip">未查询</td>
+                <td id="country">未查询</td>
+                <td id="region">未查询</td>
+                <td id="city">未查询</td>
+                <td id="isp">未查询</td>
+
+                </tr>
+                </tbody>
+                        </table>
+</div>
+    最近查询的10条数据
+          <div class="btn-toolbar list-toolbar" style="  margin-top: 11px;" >
+                    <table class="table table-hover table-striped  table-bordered table-condensed"  >
+				<thead >
+					<tr >
+						<th >
+							IP
+						</th>
+						<th>
+							国家
+						</th>
+                        <th>
+                            省份
+                        </th>
+                        <th>
+                            城市
+                        </th>
+                        <th>
+                            运营商
+                        </th>
+                        <th>
+                            查询时间
+                        </th>
+					</tr>
+				</thead>
+				<tbody id="checkhistory">
+                {% for line in history %}
+                <tr>
+                <td>{{ line.ip }}</td>
+                <td>{{ line.country }}</td>
+                <td>{{ line.region }}</td>
+                <td>{{ line.city }}</td>
+                <td>{{ line.isp }}</td>
+                <td>{{ line.date }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+                        </table>
+</div>
+    <script type="text/javascript">
+        function syncrequest(url,data,type,func){
+          $.ajax({
+              url:url,
+              data:data,
+              type:type,
+              success:func
+          })
+        }
+        function GetIPostion(){
+            var ip = $('#id_ip').val();
+        	syncrequest("{% url 'ippostionaj' %}",{'ip':ip},'post',handle_data);
+        }
+        function handle_data(post_list){
+        //$("#country").empty();
+        //$.each(post_list,function(i){
+        //$("#country").append(":"+post_list['content']['data']['country']);
+        $("#country").html(post_list['content']['data']['country']);
+        $("#region").html(post_list['content']['data']['region']);
+        $("#city").html(post_list['content']['data']['city']);
+        $("#isp").html(post_list['content']['data']['isp']);
+        $("#ip").html(post_list['content']['data']['ip']);
+        $("#checkhistory").empty();
+         var historydate = post_list['content']['historydata'];
+         for (var key in historydate)   {
+           $("#checkhistory").append("<tr>"+"<td>"+historydate[key]['ip']+"</td>"+"<td>"+historydate[key]['country']+"</td>"+"<td>"+historydate[key]['region']+"</td>"+"<td>"+historydate[key]['city']+"</td>"+"<td>"+historydate[key]['isp']+"</td>"+"<td>"+historydate[key]['date']+"</td>"+"</tr>");
+
+
+         }
+
+        //})
+        }
+
+
+    </script>
+{% endblock %}
