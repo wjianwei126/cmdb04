@@ -5,7 +5,7 @@ import MySQLdb
 def mysql_handle(arg):
     try:
 
-
+        '''
         conn = MySQLdb.connect(host='172.16.110.55',
                                user='tvie',
                                passwd='tvierocks',
@@ -17,8 +17,6 @@ def mysql_handle(arg):
                        passwd='123456',
                        port=3306,
                        charset='utf8')
-
-        '''
         cur = conn.cursor()
         conn.select_db('tvie_production2')
         cur.execute(arg)

@@ -11,12 +11,14 @@ from forms.form_for_add_output_status import OutputAddForm
 from django.template.context import RequestContext
 from  django.http import  HttpResponseRedirect
 from django_ajax.decorators import ajax
+from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render,render_to_response
 from web.models import *
 import simplejson
 import mysql_conn
 from enhandle import enhandle
+from snmpgetdata import snmpgetcpudata,snmpgetmemdata
 
 @login_required()
 def getencoderstatus(request):
@@ -161,3 +163,17 @@ def encoderhandleajax(request):
     print num,tnum,hnum
     enhandle(num,tnum,hnum)
     return {'status_code':'200'}
+def archcpustatus(request):
+    #result =snmpgetdata('localhost','public','.1.3.6.1.4.1.2021.10.1.3.1')
+    return render_to_response('encoders/archencoderstatus.html',locals())
+    #return HttpResponse(result)
+@ajax()
+def archcpustatusajax(request):
+    hum = request.POST.get('hnum')
+    result =snmpgetcpudata(hum,'public','.1.3.6.1.4.1.2021.11.11.0') #idle
+    return result
+@ajax()
+def archmemstatusajax(request):
+    hum = request.POST.get('hnum')
+    result,allmem =snmpgetmemdata(hum,'public')
+    return result,allmem
