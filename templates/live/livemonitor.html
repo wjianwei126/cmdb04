@@ -18,7 +18,7 @@
   <div class="col-xs-6 col-md-3" style="text-align: center">
     {{ value.1 }}
     <a href="{{ value.0 }}" target="_blank" class="thumbnail">
-      <img src="/statics/livepics/{{ key }}.jpg" alt="{{ key }}">
+      <object type="application/x-shockwave-flash" id="TViePlayer" name="TViePlayer" align="middle" data="/statics/player/Loader.swf" width="150" height="112"><param name="quality" value="high"><param name="bgcolor" value="#7B8EAF"><param name="allowscriptaccess" value="always"><param name="allowfullscreen" value="true"><param name="wmode" value="Window"><param name="flashvars" value="mode=HttpProgressiveDownload&amp;url={{ value.0 }}&amp;player=/statics/player/Player.swf&amp;loader=/statics/player/Loader.swf&amp;shareServer=/statics/player/share_server.php&amp;sharePlayer=http://172.16.110.1/mgmt//mgmt/player/TVieShare.html&amp;validDomain=/mgmt/player/validDomain.txt&amp;skin=/statics/player/CBNSimpleVodSkin.swf&amp;width=150&amp;height=112&amp;componentsLayout=Vertical&amp;supportSnapshot=undefined&amp;supportAudioScreen=undefined&amp;enableSystemStartupUILog=false&amp;autostart=true&amp;volume=0&amp;videoScaleMode=fill&amp;logMode=UIMode&amp;logUIWidth=500&amp;logUIHeight=300"></object>
     </a>
   </div>
   {% endfor %}
