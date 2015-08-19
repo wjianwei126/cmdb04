@@ -3,13 +3,12 @@ from web.encoder_views import *
 
 
 urlpatterns = patterns('',
-    url(r'^getencoderstatus/', getencoderstatus,name='getencoderstatus'),
     url(r'^addencoderstatus/', output_status_add_by_form,name='addencoderstatus'),
     url(r'^encoderstatus/(\w+)', encoderstatus,name='encoderstatus'),
-    url(r'^archcpustatus/', archcpustatus,name='archcpustatus'),
-    url(r'^archencoderstatus/', archcpustatus,name='archencoderstatus'),
-    url(r'^archcpustatusajax/', archcpustatusajax,name='archcpustatusajax'),
-    url(r'^archmemstatusajax/',archmemstatusajax,name='archmemstatusajax'),
+    url(r'^tvieencoderstatus/', tvieencoderstatus,name='tvieencoderstatus'),
+    url(r'^tviecpustatusajax/', tviecpustatusajax,name='tviecpustatusajax'),
+    url(r'^tviememstatusajax/',tviememstatusajax,name='tviememstatusajax'),
+    url(r'^tviediskstatusajax/',tviediskstatusajax,name='tviediskstatusajax'),
     url(r'^encoderhandle/', encoderhandle,name='encoderhandle'),
     url(r'^encoderhandleajax/', encoderhandleajax,name='encoderhandleajax'),
 

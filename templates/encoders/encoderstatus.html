@@ -4,19 +4,28 @@
 
 {% block title %}
 <div class="col-lg-12" style="text-align: center;margin-top: 10px;margin-bottom: 20px;">
-    <div class="btn-group">
-        <a class="btn btn-default" href={% url 'addencoderstatus' %}>
-            <span class="glyphicon glyphicon-edit">
+    <div class="btn-group" >
+        <a class="btn btn-default {% ifequal  key 'all' %} active {%endifequal%}" title="查看所有频道所占编码器通道"
+        href={% url 'encoderstatus' 'all' %}>
+            <span class="glyphicon glyphicon-edit" >
             </span>
-            新建编码器
+            所有频道占用
         </a>
-        <a class="btn btn-default  active" href= {% url 'getencoderstatus' %} >
-            <span class="glyphicon glyphicon-list">
+        <a class="btn btn-default {% ifequal  key 'publish' %} active {%endifequal%}" title="仅查看发布频道所占编码器通道"
+        href={% url 'encoderstatus' 'publish' %}>
+            <span class="glyphicon glyphicon-list" >
             </span>
-            通道状态
+            已发布频道占用
+        </a>
+                <a class="btn btn-default {% ifequal  key 'handle' %} active {%endifequal%}" title="仅查看发布频道所占编码器通道"
+        href={% url 'encoderhandle'  %}>
+            <span class="glyphicon glyphicon-cog" >
+            </span>
+            编码器操作
         </a>
     </div>
 </div>
+
 {% endblock %}
 
 {% block content %}
@@ -62,9 +71,82 @@ th,td{
             </div>
             {% endifequal %}
     </div>
-                           <div class="btn-toolbar">
+            <div id="main" style="height:400px" ></div>
+            <script src="http://echarts.baidu.com/build/dist/echarts.js"></script>
+            <script type="text/javascript">
+    // 路径配置
+    require.config({
+        paths: {
+            echarts: 'http://echarts.baidu.com/build/dist'
+        }
+    });
+    // 使用
+    require(['echarts', 'echarts/chart/pie' // 使用柱状图就加载bar模块，按需加载
+    ],
+    function(ec) {
+        // 基于准备好的dom，初始化echarts图表
+        var myChart = ec.init(document.getElementById('main'));
 
-                    <div class="btn-toolbar list-toolbar">
+    option = {
+    title : {
+        text: '编码器占用比例',
+        subtext: '来自数据库',
+        x:'center'
+    },
+    tooltip : {
+        trigger: 'item',
+        formatter: "{a} <br/>{b} : {c} ({d}%)"
+    },
+    legend: {
+        orient : 'vertical',
+        x : 'left',
+        data:['正在使用通道({{ use_counts }})个','未使用通道({{ nouse_counts }})个']
+    },
+    toolbox: {
+        show : true,
+        feature : {
+            mark : {show: true},
+            dataView : {show: true, readOnly: false},
+            magicType : {
+                show: false,
+                type: ['pie', 'funnel'],
+                option: {
+                    funnel: {
+                        x: '25%',
+                        width: '50%',
+                        funnelAlign: 'left',
+                        max: 1548
+                    }
+                }
+            },
+            restore : {show: true},
+            saveAsImage : {show: true}
+        }
+    },
+    calculable : true,
+    series : [
+        {
+            name:'访问来源',
+            type:'pie',
+            radius : '55%',
+            center: ['50%', '60%'],
+            data:[
+                {value:{{ use_counts }}, name:'正在使用通道({{ use_counts }})个'},
+                {value:{{ nouse_counts }}, name:'未使用通道({{ nouse_counts }})个'}
+            ]
+        }
+    ]
+};
+
+
+
+        // 为echarts对象加载数据
+        myChart.setOption(option);
+    });
+</script>
+           <div class="btn-toolbar">
+
+           <div class="btn-toolbar list-toolbar">
                     <table class="table table-hover table-striped  table-bordered table-condensed" >
 				<thead>
 					<tr>
@@ -72,18 +154,26 @@ th,td{
 							编码器名称
 						</th>
 						<th>
-							通道开启状态
+							通道占用状态
 						</th>
+                        <th>
+							编码器负载
+						</th>
+
 				</thead>
 				<tbody>
-              {% load pagination_tags %}
-                {% autopaginate contents 15 %}
-				{% for line in contents %}
+				{% for line in contents.items %}
                 <!--<tr onmouseover="this.style.backgroundColor='#EEEEEE';" onmouseout="this.style.backgroundColor='#FFFFFF';">-->
                 <tr onmouseover="this.style.backgroundColor='#EEEEEE';" onmouseout="this.style.backgroundColor='';">
-                    <td >{{ line.encoder_name}}</td>
-                    <td data-uid="{{ line.encoder_name}}">
+                    <td ><a href="http://{{ line.1.1 }}" target="_blank">{{ line.1.0 }}</a></td>
+                    <td data-uid="encoder{{ line.0}}">
+                        {% for i in defaultstatus %}
+                            <span class='label label-default' id=span{{ i }}>{{ i }}</span>
+                            {% endfor %}
                     </td>
+                <td>
+                    <a href="/encoder/tvieencoderstatus/?server={{ line.1.1 }}">查看负载</a>
+                </td>
                 </tr>
                 {% endfor %}
                    {% endif %}
@@ -91,11 +181,11 @@ th,td{
 				</tbody>
 
 			</table>
-                <button class="btn btn-primary" type="button">
+       <!--         <button class="btn btn-primary" type="button">
          总共 <span class="badge">{{ encodercounts }}</span> 条记录
         </button>
+        -->
 
-{% paginate %}
 {% endblock %}
 {% block script %}
     <script type="text/javascript">
@@ -105,16 +195,22 @@ th,td{
         var str = {{ data|safe }};
         var testlist = [1,2,3,4,5,6,7,8];
         $.each(str,function(k,v){
+             $("td[data-uid=" + k + "]").html('');
             $.each(testlist,function(i){
                if(v.indexOf(testlist[i].toString()) != -1 ) {
-               $("td[data-uid=" + k + "]").append("<span class='label label-success'>" +testlist[i]+ "</span>"+' ')
+               $("td[data-uid=" + k + "]").append("<span class='label label-success'"+"id=span"+testlist[i]+">" +testlist[i]+ "</span>"+' ')
                }
               else{
-                 $("td[data-uid=" + k + "]").append("<span class='label label-default'>" +testlist[i]+ "</span>"+' ')
+                 $("td[data-uid=" + k + "]").append("<span class='label label-default'"+"id=span"+testlist[i]+">" +testlist[i]+ "</span>"+' ')
                }
             });
 
-        })
+        });
+        for(m=1;m<=25;m++){
+            for(n=5;n<=8;n++){
+            $("td[data-uid=" + "encoder"+ m + "]").find("span[id='"+"span"+n+"']").remove()
+            }
+        }
     }
 
     window.onload = encoderstatus;

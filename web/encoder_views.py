@@ -18,22 +18,8 @@ from web.models import *
 import simplejson
 import mysql_conn
 from enhandle import enhandle
-from snmpgetdata import snmpgetcpudata,snmpgetmemdata
-
-@login_required()
-def getencoderstatus(request):
-    loginuser = request.user.username
-    data = { }
-    contents = EencoderStatus.objects.order_by('encoder_name').all()
-    encodercounts = EencoderStatus.objects.count()
-    p = re.compile(r'\d+')
-    for i in contents:
-       #data[i.encoder_name.encode("utf-8")] = i.output_name.encode("utf-8")
-       templist = i.output_name.encode("utf-8")
-       t = p.findall(templist)
-       data[i.encoder_name.encode("utf-8")] = t
-    return render_to_response('encoders/encoderstatus.html',locals())
-
+#from snmpgetdata import snmpgetcpudata,snmpgetmemdata
+from enstatus import tvieenstatus
 
 def output_status_add_by_form(request):
     if request.method=='POST':
@@ -109,7 +95,7 @@ def encoderstatus(request,key):
         counts += len(set(data[k]))
     use_counts = counts
     nouse_counts = 160 - int(counts) - 8 #encoder7 encoder16 已经废掉
-    return render_to_response('live/encoderstatus.html',locals())
+    return render_to_response('encoders/encoderstatus.html',locals())
 def encoderhandle(request):
     key = 'handle'
     sql = "select streams.uri from channels ,streams  where channels.id=streams.channel_id and streams.uri like '%channels%' and streams.status = 'NORMAL' order BY LENGTH(uri),uri"
@@ -163,17 +149,23 @@ def encoderhandleajax(request):
     print num,tnum,hnum
     enhandle(num,tnum,hnum)
     return {'status_code':'200'}
-def archcpustatus(request):
+def tvieencoderstatus(request):
     #result =snmpgetdata('localhost','public','.1.3.6.1.4.1.2021.10.1.3.1')
-    return render_to_response('encoders/archencoderstatus.html',locals())
+    server = request.REQUEST.get('server','172.16.110.1')
+    return render_to_response('encoders/tvieencoderstatus.html',locals())
     #return HttpResponse(result)
 @ajax()
-def archcpustatusajax(request):
+def tviecpustatusajax(request):
     hum = request.POST.get('hnum')
-    result =snmpgetcpudata(hum,'public','.1.3.6.1.4.1.2021.11.11.0') #idle
-    return result
+    cpu =tvieenstatus(hum,'cpu')
+    return cpu
 @ajax()
-def archmemstatusajax(request):
+def tviememstatusajax(request):
     hum = request.POST.get('hnum')
-    result,allmem =snmpgetmemdata(hum,'public')
-    return result,allmem
+    memRate =tvieenstatus(hum,'memRate')
+    return memRate
+@ajax()
+def tviediskstatusajax(request):
+    hum = request.POST.get('hnum')
+    diskRate =tvieenstatus(hum,'diskRate')
+    return diskRate

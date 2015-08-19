@@ -139,7 +139,7 @@ def encoderstatus(request,key):
         counts += len(set(data[k]))
     use_counts = counts
     nouse_counts = 160 - int(counts)
-    return render_to_response('live/encoderstatus.html',locals())
+    return render_to_response('live/../templates/encoders/encoderstatus.html',locals())
 @login_required()
 def ytcentercdn(request):
 
